@@ -1,4 +1,4 @@
-from bs4 import BeautifulSoup
+from bs4 import BeautifulSoup, NavigableString
 import requests
 
 def getix(url):
@@ -18,7 +18,8 @@ def getix(url):
         tags = soup2.find_all('h3')
         for t in tags:
             if t.attrs['property'] == "name":
-                document['title'] = t.text
+                if not isinstance(t, NavigableString):
+                    document['title'] = t.text
         # other stuff
         for tr in soup2.find_all('tr'):
             for th in  tr.find('th'):
@@ -26,7 +27,8 @@ def getix(url):
                 if "Author" in th:
                     document['author'] = []
                     for td in tr.find('td'):
-                        document['author'].append (td.text.strip())
+                        if not isinstance(td, NavigableString):
+                            document['author'].append (td.text.strip())
                 if "Published:" in th:
                     for td in tr.find('td'):
                         for span in tr.findAll('span', {"property":True}):
